@@ -29,22 +29,19 @@ Hence, to validate, we can put some set of questions in this direction as,
 ```
 Select the smallest rank 'r' whose validation Dice is within ±1% of the Dense validation Dice. 
 ```
-\[
+$$
 \frac{\left|Dice_r - Dice_{\mathrm{Dense}}\right|}
 {Dice_{\mathrm{Dense}}}
-\leq 0.01    
-\]
+\leq 0.01
+$$
 
 ---
 ### Tie Handling
 If two or more than two ranks have qualify for the given criteria, then choose the smallest rank, 
-\[
-r^* = \min \left\{r :
-\frac{\left|Dice_r - Dice_{\mathrm{Dense}}\right|}
-{Dice_{\mathrm{Dense}}}
-\leq 0.01
-\right\}.
-\] 
+
+$$
+r^* = \min \{ r \mid \frac{|Dice_r - Dice_{\mathrm{Dense}}|}{Dice_{\mathrm{Dense}}} \leq 0.01 \}
+$$
 
 ---
 ### Experimental Block Diagram
@@ -85,7 +82,7 @@ For training purpose, `AdamW` optimizer with `learning rate 1e-3` and `weighted_
 optimizer = torch.optim.AdamW(
     filter(lambda p: p.requires_grad, dense_model.parameters()),
     lr=1e-3,weight_decay=1e-4,)
-    ```
+```
 Cross entropy loss has been utilized for model training purpose.
 ```
 criterion = torch.nn.CrossEntropyLoss()
@@ -190,7 +187,9 @@ if val_metrics["gland_dice"] > best_val_dice:
 ```
 
 ---
+
 ### Rank Grid and SEEDs
+
 | Model | Numerical Rank | Effective Rank |
 | :--- | :---: | ---: |
 | Dense Rank | 196 | 121.0593 |
@@ -202,29 +201,27 @@ if val_metrics["gland_dice"] > best_val_dice:
 | Low Rank | 24 | 8.0881 |
 
 ---
+
 ### Metric Hierarchy
 Primary metric for validation during training is `Gland_Dice`. Where,
-\[
-Dice =
-\frac{2|P \cap G|}
-{|P| + |G|}
-\]
+
+$$
+Dice = \frac{2|P \cap G|}{|P| + |G|}
+$$
+
 P is predicted segmentation, G is ground truth segmentation.
 Secondary metric that has been utilized during testing are `IoU` and `mIoU`. Where,
-\[
-IoU=
-\frac{|P \cap G|}
-{|P \cup G|}
-\]
-\[
-mIoU
-=
-\frac{1}{C}
-\sum_{c=1}^{C}
-\mathrm{IoU}_c
-\]
+
+$$
+IoU = \frac{|P \cap G|}{|P \cup G|}
+$$
+
+$$
+mIoU = \frac{1}{C}\sum_{c=1}^{C} \mathrm{IoU}_c
+$$
 
 ---
+
 ### Low-Rank Construction
 For creating low-rank model, a rank truncation backbone has been utilized. 
 ```
@@ -291,11 +288,11 @@ rank32_model = SegmentationProbing(
 
 ---
 ### H1 Failure Criterion
+
 H1 is considered unsupported if no candidate rank below the Dense rank satisfies the predefined 1% relative-Dice preservation criterion. Hence, 
 For all rank r, if 
-\[
-\frac{|Dice_r-Dice_{\mathrm{Dense}}|}
-{Dice_{\mathrm{Dense}}}> 0.01.
-\]
 
----
+$$
+\frac{|Dice_r - Dice_{\mathrm{Dense}}|}{Dice_{\mathrm{Dense}}} > 0.01
+$$
+
